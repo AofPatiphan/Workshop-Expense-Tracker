@@ -5,10 +5,16 @@ export default function TransactionList({
     categories,
     deleteTransection,
 }) {
-    // console.log(data)
+    // const [data]
+    const handleChangeNumberList = (e) => {
+        if (e.target.value === 10) {
+        }
+    };
+
+    // console.log(data);
     return (
         <ul className="list-group">
-            {data.map((el) => (
+            {data.map((el, index) => (
                 <Transaction
                     el={el}
                     categories={categories}

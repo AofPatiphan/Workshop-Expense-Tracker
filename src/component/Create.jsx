@@ -81,7 +81,7 @@ export default function Create({ categories, createTransaction }) {
                     className="btn btn-outline-warning"
                     onClick={hangleClickCreate}
                 >
-                    Create Transaction
+                    {toggle ? 'Cancel' : 'Create Transaction'}
                 </button>
             </div>
             {toggle ? (

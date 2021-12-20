@@ -113,10 +113,10 @@ function App() {
                             type="text"
                             className="form-select form-select-sm"
                         >
-                            <option value="">10</option>
-                            <option value="">25</option>
-                            <option value="">50</option>
-                            <option value="">100</option>
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
                         </select>
                     </div>
                     <span className="text-white-50 mx-2 fs-7">
