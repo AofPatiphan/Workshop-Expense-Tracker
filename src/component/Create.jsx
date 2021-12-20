@@ -9,12 +9,21 @@ export default function Create({ categories, createTransaction }) {
     const [categoryId, setCategoryId] = useState('');
     const [comment, setComment] = useState('');
     const [type, setType] = useState('EXPENSE');
-    const [error, setError] = useState('');
+    const [error, setError] = useState(false);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (categoryId === '') {
-            return setError('Category must be selected');
+            return setError(true);
+        }
+        if (payee === '') {
+            return setError(true);
+        }
+        if (amount === '') {
+            return setError(true);
+        }
+        if (date === '') {
+            return setError(true);
         }
         createTransaction({
             payee: payee,
@@ -31,6 +40,38 @@ export default function Create({ categories, createTransaction }) {
         setComment('');
         setType('EXPENSE');
         setToggle(!toggle);
+        setError(false);
+    };
+
+    const hangleClickCreate = () => {
+        setPayee('');
+        setAmount('');
+        setDate('');
+        setCategoryId('');
+        setComment('');
+        setType('EXPENSE');
+        setToggle(!toggle);
+        setError(false);
+    };
+
+    const handleClickIncome = () => {
+        setType('INCOME');
+        setPayee('');
+        setAmount('');
+        setDate('');
+        setCategoryId('');
+        setComment('');
+        setError(false);
+    };
+
+    const handleClickExpense = () => {
+        setType('EXPENSE');
+        setPayee('');
+        setAmount('');
+        setDate('');
+        setCategoryId('');
+        setComment('');
+        setError(false);
     };
 
     return (
@@ -38,7 +79,7 @@ export default function Create({ categories, createTransaction }) {
             <div className="d-grid mt-3">
                 <button
                     className="btn btn-outline-warning"
-                    onClick={() => setToggle(!toggle)}
+                    onClick={hangleClickCreate}
                 >
                     Create Transaction
                 </button>
@@ -53,7 +94,7 @@ export default function Create({ categories, createTransaction }) {
                                 id="cbx-expense"
                                 name="type"
                                 defaultChecked
-                                onClick={() => setType('EXPENSE')}
+                                onClick={handleClickExpense}
                             />
                             <label
                                 className="btn btn-outline-danger rounded-0 rounded-start"
@@ -66,7 +107,7 @@ export default function Create({ categories, createTransaction }) {
                                 className="btn-check"
                                 id="cbx-income"
                                 name="type"
-                                onClick={() => setType('INCOME')}
+                                onClick={handleClickIncome}
                             />
                             <label
                                 className="btn btn-outline-success rounded-0 rounded-end"
@@ -79,16 +120,26 @@ export default function Create({ categories, createTransaction }) {
                             <label className="form-label">Payee</label>
                             <input
                                 type="text"
-                                className="form-control"
+                                className={`form-control ${
+                                    error && !payee && 'is-invalid'
+                                }`}
                                 value={payee}
-                                onChange={(e) => setPayee(e.target.value)}
+                                onChange={(e) => {
+                                    setPayee(e.target.value);
+                                    setError('');
+                                }}
                             />
+                            {payee ? null : (
+                                <div className="invalid-feedback">
+                                    {error && 'Please enter payee'}
+                                </div>
+                            )}
                         </div>
                         <div className="col-sm-6">
                             <label className="form-label">Category</label>
                             <select
                                 className={`form-select ${
-                                    error && 'is-invalid'
+                                    error && !categoryId && 'is-invalid'
                                 }`}
                                 onChange={(e) => {
                                     setCategoryId(e.target.value);
@@ -107,27 +158,48 @@ export default function Create({ categories, createTransaction }) {
                                     return null;
                                 })}
                             </select>
-                            {error && (
-                                <div className="invalid-feedback">{error}</div>
+                            {categoryId ? null : (
+                                <div className="invalid-feedback">
+                                    {error && 'Please select category'}
+                                </div>
                             )}
                         </div>
                         <div className="col-sm-6">
                             <label className="form-label">Amount</label>
                             <input
                                 type="text"
-                                className="form-control"
+                                className={`form-control ${
+                                    error && !amount && 'is-invalid'
+                                }`}
                                 value={amount}
-                                onChange={(e) => setAmount(e.target.value)}
+                                onChange={(e) => {
+                                    setAmount(e.target.value);
+                                    setError('');
+                                }}
                             />
+                            <div className="invalid-feedback">
+                                {error && 'Please enter amount'}
+                            </div>
                         </div>
                         <div className="col-sm-6">
                             <label className="form-label">Date</label>
                             <input
                                 type="date"
-                                className="form-control"
+                                className={`form-control ${
+                                    error && !date && 'is-invalid'
+                                }`}
                                 value={date}
-                                onChange={(e) => setDate(e.target.value)}
+                                onChange={(e) => {
+                                    setDate(e.target.value);
+                                    setError('');
+                                }}
                             />
+
+                            {date ? null : (
+                                <div className="invalid-feedback">
+                                    {error && 'Please select date'}
+                                </div>
+                            )}
                         </div>
                         <div className="col-12">
                             <label className="form-label">Comment</label>
