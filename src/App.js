@@ -2,11 +2,18 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 import Create from './component/Create';
 import Summary from './component/Summary';
+import TransactionFilter from './component/TransactionFilter';
 import TransactionList from './component/TransactionList';
 
 function App() {
     const [data, setData] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [editingTransaction, setEditingTransaction] = useState(null);
+    const [toggle, setToggle] = useState(false);
+    const [textFilter, setTextFilter] = useState('');
+    const [monthFilter, setMonthFilter] = useState('');
+    const [yearFilter, setYearFilter] = useState('');
+
     useEffect(() => {
         axios.get('http://localhost:8080/transactions').then((res) => {
             setData(res.data.transactions);
@@ -46,118 +53,64 @@ function App() {
         setData(newData);
     };
 
+    const selectTransaction = (transaction) => {
+        setToggle(true);
+        setEditingTransaction(transaction);
+    };
+
+    const edit = async ({ payee, amount, date, categoryId, comment, id }) => {
+        const res = await axios.put(
+            `http://localhost:8080/transactions/${id}`,
+            {
+                payee: payee,
+                amount: +amount,
+                date: date,
+                categoryId: categoryId,
+                comment: comment,
+            }
+        );
+
+        const newData = data.map((el) => {
+            if (el.id === res.data.transaction.id) {
+                return res.data.transaction;
+            }
+            return el;
+        });
+        console.log(res.data);
+        setData(newData);
+    };
+
     return (
         <div className="container mw-md">
             <Create
                 categories={categories}
                 createTransaction={createTransaction}
+                editingTransaction={editingTransaction}
+                toggle={toggle}
+                setToggle={setToggle}
+                setEditingTransaction={setEditingTransaction}
+                edit={edit}
             />
 
             <Summary data={data} categories={categories} />
 
-            <div className="mt-4">
-                <div className="row g-3">
-                    <div className="col-sm-6">
-                        <div className="input-group">
-                            <input
-                                type="text"
-                                className="form-control form-control-sm"
-                                placeholder="Enter to search"
-                            />
-                            <button className="btn btn-sm btn-outline-light">
-                                x
-                            </button>
-                        </div>
-                    </div>
-                    <div className="col-sm-3">
-                        <div className="input-group">
-                            <select className="form-select form-select-sm">
-                                <option value="">Month</option>
-                                <option value="">Jan</option>
-                                <option value="">Feb</option>
-                                <option value="">Mar</option>
-                                <option value="">Apr</option>
-                                <option value="">May</option>
-                                <option value="">Jun</option>
-                                <option value="">Jul</option>
-                                <option value="">Aug</option>
-                                <option value="">Sep</option>
-                                <option value="">Oct</option>
-                                <option value="">Nov</option>
-                                <option value="">Dec</option>
-                            </select>
-                            <button className="btn btn-sm btn-outline-light">
-                                x
-                            </button>
-                        </div>
-                    </div>
-                    <div className="col-sm-3">
-                        <div className="input-group">
-                            <select className="form-select form-select-sm">
-                                <option value="">Year</option>
-                                <option value="">2021</option>
-                                <option value="">2020</option>
-                            </select>
-                            <button className="btn btn-sm btn-outline-light">
-                                x
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="mt-3 d-flex justify-content-between">
-                <div className="d-flex align-items-center mb-3">
-                    <div>
-                        <select
-                            type="text"
-                            className="form-select form-select-sm"
-                        >
-                            <option value="10">10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </select>
-                    </div>
-                    <span className="text-white-50 mx-2 fs-7">
-                        Showing 1 to 10 of 20 transactions
-                    </span>
-                </div>
-                <nav>
-                    <ul className="pagination pagination-sm">
-                        <li className="page-item disabled">
-                            <a href="/" className="page-link">
-                                <span>&laquo;</span>
-                            </a>
-                        </li>
-                        <li className="page-item active">
-                            <a href="/" className="page-link">
-                                <span>1</span>
-                            </a>
-                        </li>
-                        <li className="page-item">
-                            <a href="/" className="page-link">
-                                <span>2</span>
-                            </a>
-                        </li>
-                        <li className="page-item">
-                            <a href="/" className="page-link">
-                                <span>3</span>
-                            </a>
-                        </li>
-                        <li className="page-item">
-                            <a href="/" className="page-link">
-                                <span>&raquo;</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+            <TransactionFilter
+                setTextFilter={setTextFilter}
+                setMonthFilter={setMonthFilter}
+                setYearFilter={setYearFilter}
+                textFilter={textFilter}
+                monthFilter={monthFilter}
+                yearFilter={yearFilter}
+            />
 
             <TransactionList
                 data={data}
                 categories={categories}
                 deleteTransection={deleteTransection}
+                selectTransaction={selectTransaction}
+                textFilter={textFilter}
+                monthFilter={monthFilter}
+                yearFilter={yearFilter}
             />
 
             <footer className="text-white-50 text-center py-3 fs-7">

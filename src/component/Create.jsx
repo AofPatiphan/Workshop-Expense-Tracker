@@ -1,8 +1,16 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import Transaction from './Transaction';
 
-export default function Create({ categories, createTransaction }) {
-    const [toggle, setToggle] = useState(false);
+export default function Create({
+    categories,
+    createTransaction,
+    editingTransaction,
+    toggle,
+    setToggle,
+    setEditingTransaction,
+    edit,
+}) {
     const [payee, setPayee] = useState('');
     const [amount, setAmount] = useState('');
     const [date, setDate] = useState('');
@@ -25,13 +33,24 @@ export default function Create({ categories, createTransaction }) {
         if (date === '') {
             return setError(true);
         }
-        createTransaction({
-            payee: payee,
-            amount: +amount,
-            date: date,
-            categoryId: categoryId,
-            comment: comment,
-        });
+        if (editingTransaction !== null) {
+            edit({
+                payee: payee,
+                amount: +amount,
+                date: date,
+                categoryId: categoryId,
+                comment: comment,
+                id: editingTransaction.id,
+            });
+        } else {
+            createTransaction({
+                payee: payee,
+                amount: +amount,
+                date: date,
+                categoryId: categoryId,
+                comment: comment,
+            });
+        }
         // console.log(result);
         setPayee('');
         setAmount('');
@@ -52,6 +71,7 @@ export default function Create({ categories, createTransaction }) {
         setType('EXPENSE');
         setToggle(!toggle);
         setError(false);
+        setEditingTransaction(null);
     };
 
     const handleClickIncome = () => {
@@ -74,6 +94,17 @@ export default function Create({ categories, createTransaction }) {
         setError(false);
     };
 
+    useEffect(() => {
+        if (editingTransaction !== null) {
+            setPayee(editingTransaction.payee);
+            setAmount(editingTransaction.amount);
+            setDate(editingTransaction.date.split('T')[0]);
+            setCategoryId(editingTransaction.category.id);
+            setComment(editingTransaction.comment);
+            setType(editingTransaction.category.type);
+        }
+    }, [toggle, editingTransaction]);
+
     return (
         <div>
             <div className="d-grid mt-3">
@@ -93,8 +124,8 @@ export default function Create({ categories, createTransaction }) {
                                 className="btn-check"
                                 id="cbx-expense"
                                 name="type"
-                                defaultChecked
-                                onClick={handleClickExpense}
+                                checked={type === 'EXPENSE' ? 'checked' : ''}
+                                onChange={handleClickExpense}
                             />
                             <label
                                 className="btn btn-outline-danger rounded-0 rounded-start"
@@ -107,7 +138,8 @@ export default function Create({ categories, createTransaction }) {
                                 className="btn-check"
                                 id="cbx-income"
                                 name="type"
-                                onClick={handleClickIncome}
+                                checked={type === 'INCOME' ? 'checked' : ''}
+                                onChange={handleClickIncome}
                             />
                             <label
                                 className="btn btn-outline-success rounded-0 rounded-end"
@@ -145,6 +177,7 @@ export default function Create({ categories, createTransaction }) {
                                     setCategoryId(e.target.value);
                                     setError('');
                                 }}
+                                value={categoryId}
                             >
                                 <option value={''}>SELECT</option>
                                 {categories.map((el) => {
@@ -191,6 +224,8 @@ export default function Create({ categories, createTransaction }) {
                                 value={date}
                                 onChange={(e) => {
                                     setDate(e.target.value);
+                                    console.log(date);
+                                    console.log(typeof e.target.value);
                                     setError('');
                                 }}
                             />

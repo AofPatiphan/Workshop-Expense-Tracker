@@ -1,19 +1,28 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 
-export default function Transaction({ el, categories, deleteTransection }) {
+export default function Transaction({
+    el,
+    categories,
+    deleteTransection,
+    selectTransaction,
+}) {
     const formatDate = (date) => {
         const d = new Date(date).toString();
         const month = d.slice(4, 7);
         const year = d.slice(13, 15);
         return month + ' ' + year;
     };
+    console.log(el);
 
     const category = categories.find((item) => item.id === el.category.id);
 
     return (
         <li className="list-group-item d-flex justify-content-between align-items-center bd-callout bd-callout-danger">
-            <div className="transaction-detail d-flex flex-fill me-4">
+            <div
+                className="transaction-detail d-flex flex-fill me-4"
+                onClick={() => selectTransaction(el)}
+            >
                 <div className="transaction-date-card border border-1 border-dark rounded-2 bg-warning p-2 text-center">
                     <p className="p-0 m-0 fs-7 text-black-50">
                         {formatDate(el.date)}
@@ -27,7 +36,15 @@ export default function Transaction({ el, categories, deleteTransection }) {
                             {category ? category.name : 'not found'}
                         </p>
                     </div>
-                    <span className="badge bg-danger">฿{el.amount}</span>
+                    <span
+                        className={`badge bg-${
+                            el.category.type === 'EXPENSE'
+                                ? 'danger'
+                                : 'success'
+                        }`}
+                    >
+                        ฿{el.amount}
+                    </span>
                 </div>
             </div>
             <button className="btn btn-link text-secondary p-0 border-0">
