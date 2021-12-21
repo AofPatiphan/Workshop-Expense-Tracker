@@ -13,7 +13,6 @@ export default function Transaction({
         const year = d.slice(13, 15);
         return month + ' ' + year;
     };
-    console.log(el);
 
     const category = categories.find((item) => item.id === el.category.id);
 
@@ -43,7 +42,7 @@ export default function Transaction({
                                 : 'success'
                         }`}
                     >
-                        ฿{el.amount}
+                        ฿{Number(el.amount).toLocaleString('en')}
                     </span>
                 </div>
             </div>

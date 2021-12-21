@@ -1,5 +1,6 @@
 import Transaction from './Transaction';
 import { useState } from 'react';
+import PageNumber from './PageNumber';
 
 export default function TransactionList({
     data,
@@ -67,20 +68,13 @@ export default function TransactionList({
                         {Array(Math.ceil(totalLength / amountPage))
                             .fill(0)
                             .map((el, index) => {
-                                return (
-                                    <li
-                                        className={`page-item  ${
-                                            index === page ? 'active' : ''
-                                        }`}
-                                    >
-                                        <button
-                                            className="page-link"
-                                            onClick={() => setPage(index)}
-                                        >
-                                            <span>{index + 1}</span>
-                                        </button>
-                                    </li>
-                                );
+                                <PageNumber
+                                    el={el}
+                                    index={index}
+                                    key={el.id}
+                                    setPage={setPage}
+                                    page={page}
+                                />;
                             })}
 
                         <li
