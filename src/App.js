@@ -18,7 +18,7 @@ function App() {
         axios.get('http://localhost:8080/transactions').then((res) => {
             setData(res.data.transactions);
         });
-    }, []);
+    }, [data]);
 
     useEffect(() => {
         axios.get('http://localhost:8080/categories').then((res) => {
@@ -69,7 +69,6 @@ function App() {
                 comment: comment,
             }
         );
-
         const newData = data.map((el) => {
             if (el.id === res.data.transaction.id) {
                 return res.data.transaction;

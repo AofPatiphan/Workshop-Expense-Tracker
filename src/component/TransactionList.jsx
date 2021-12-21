@@ -1,6 +1,5 @@
 import Transaction from './Transaction';
 import { useState } from 'react';
-import PageNumber from './PageNumber';
 
 export default function TransactionList({
     data,
@@ -11,10 +10,8 @@ export default function TransactionList({
     monthFilter,
     yearFilter,
 }) {
-    const [amountPage, setAmountPage] = useState('10');
+    const [amountPage, setAmountPage] = useState('5');
     const [page, setPage] = useState(0);
-
-    const totalLength = data.length;
 
     const paginationData = data.filter((el, idx) => {
         if (amountPage * page <= idx && amountPage * (page + 1) > idx) {
@@ -22,6 +19,8 @@ export default function TransactionList({
         }
         return false;
     });
+
+    const totalLength = data.length;
 
     return (
         <>
@@ -33,17 +32,19 @@ export default function TransactionList({
                             className="form-select form-select-sm"
                             onChange={(e) => setAmountPage(e.target.value)}
                         >
-                            <option value="10" defaultChecked>
-                                10
+                            <option value="5" defaultChecked>
+                                5
                             </option>
+                            <option value="10">10</option>
                             <option value="25">25</option>
                             <option value="50">50</option>
-                            <option value="100">100</option>
                         </select>
                     </div>
                     <span className="text-white-50 mx-2 fs-7">
-                        {`Showing 1 to ${
-                            amountPage > totalLength ? totalLength : amountPage
+                        {`Showing ${page * amountPage + 1} to ${
+                            amountPage > totalLength
+                                ? totalLength
+                                : amountPage * (page + 1)
                         } of ${totalLength} transactions`}
                     </span>
                 </div>
@@ -68,13 +69,21 @@ export default function TransactionList({
                         {Array(Math.ceil(totalLength / amountPage))
                             .fill(0)
                             .map((el, index) => {
-                                <PageNumber
-                                    el={el}
-                                    index={index}
-                                    key={el.id}
-                                    setPage={setPage}
-                                    page={page}
-                                />;
+                                return (
+                                    <li
+                                        key={index}
+                                        className={`page-item  ${
+                                            index === page ? 'active' : ''
+                                        }`}
+                                    >
+                                        <button
+                                            className="page-link"
+                                            onClick={() => setPage(index)}
+                                        >
+                                            <span>{index + 1}</span>
+                                        </button>
+                                    </li>
+                                );
                             })}
 
                         <li
@@ -94,6 +103,7 @@ export default function TransactionList({
                     </ul>
                 </nav>
             </div>
+
             <ul className="list-group">
                 {paginationData.map((el) => {
                     // console.log(new Date(el.date).getMonth());
